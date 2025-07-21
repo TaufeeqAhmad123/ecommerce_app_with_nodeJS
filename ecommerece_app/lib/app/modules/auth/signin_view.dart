@@ -1,0 +1,199 @@
+import 'package:ecommerece_app/app/modules/home/home_view.dart';
+import 'package:ecommerece_app/app/provider/auth_provider.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:ecommerece_app/app/data/constants/constants.dart';
+import 'package:ecommerece_app/app/modules/auth/components/components.dart';
+import 'package:ecommerece_app/app/modules/auth/forget_password.dart';
+import 'package:ecommerece_app/app/modules/auth/signup_view.dart';
+import 'package:ecommerece_app/app/modules/interest/choose_interest_view.dart';
+import 'package:ecommerece_app/app/modules/widgets/buttons/custom_text_button.dart';
+import 'package:ecommerece_app/app/modules/widgets/buttons/primary_button.dart';
+import 'package:provider/provider.dart';
+
+class SignInView extends StatefulWidget {
+  const SignInView({super.key});
+
+  @override
+  State<SignInView> createState() => _SignInViewState();
+}
+
+class _SignInViewState extends State<SignInView> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool isRemember = false;
+
+  void _login() {
+    final provider = Provider.of<AuthProvider>(context, listen: false);
+    try {
+      if (_formKey.currentState!.validate()) {
+        provider
+            .login(
+              _emailController.text.trim(),
+              _passwordController.text.trim(),
+            )
+            .then((success) {
+              if (success) {
+                Get.to<Widget>(() => const HomeView());
+              } else {
+                Get.snackbar(
+                  'Error',
+                  'Login failed. Please check your credentials.',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: const Color.fromARGB(
+                    255,
+                    7,
+                    203,
+                    79,
+                  ).withOpacity(0.8),
+                  colorText: Colors.white,
+                );
+              }
+            });
+      } else {
+        Get.snackbar(
+          'Error',
+          'Please fill in all fields correctly.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.withOpacity(0.8),
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Login failed. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const AuthAppBar(),
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
+        child: Form(
+          key: _formKey,
+          child: Center(
+            child: Column(
+              children: [
+                Text('Let’s Sign you in', style: AppTypography.kBold24),
+                SizedBox(height: AppSpacing.fiveVertical),
+                Text(
+                  'Lorem ipsum dolor sit amet, consectetur',
+                  style: AppTypography.kMedium14.copyWith(
+                    color: AppColors.kGrey60,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.thirtyVertical),
+                // Email Field.
+                AuthField(
+                  title: 'Email Address',
+                  hintText: 'Enter your email address',
+                  controller: _emailController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Email is required';
+                    } else if (!value.isEmail) {
+                      return 'Invalid email address';
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                ),
+                SizedBox(height: AppSpacing.fifteenVertical),
+                // Password Field.
+                AuthField(
+                  title: 'Password',
+                  hintText: 'Enter your password',
+                  controller: _passwordController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Password is required';
+                    } else if (value.length < 8) {
+                      return 'Password should be at least 8 characters long';
+                    }
+                    return null;
+                  },
+                  isPassword: true,
+                  keyboardType: TextInputType.visiblePassword,
+                  textInputAction: TextInputAction.done,
+                ),
+                SizedBox(height: AppSpacing.fiveVertical),
+                Row(
+                  children: [
+                    RememberMeCard(
+                      onChanged: (value) {
+                        setState(() {
+                          isRemember = value;
+                        });
+                      },
+                    ),
+                    const Spacer(),
+                    CustomTextButton(
+                      onPressed: () {
+                        Get.to<Widget>(() => const ForgetPassword());
+                      },
+                      text: 'Forget Password',
+                    ),
+                  ],
+                ),
+                SizedBox(height: AppSpacing.fifteenVertical),
+                PrimaryButton(
+                  onTap: () {
+                    _login();
+                  },
+                  text: 'Sign In',
+                ),
+                SizedBox(height: AppSpacing.twentyVertical),
+                RichText(
+                  text: TextSpan(
+                    text: 'Don’t have an account? ',
+                    style: AppTypography.kSemiBold16.copyWith(
+                      color: AppColors.kGrey70,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: 'Sign Up',
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Get.to<Widget>(() => const SignUpView());
+                          },
+                        style: AppTypography.kSemiBold16.copyWith(
+                          color: AppColors.kPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: AppSpacing.twentyVertical),
+                const TextWithDivider(),
+                SizedBox(height: AppSpacing.twentyVertical),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    CustomSocialButton(onTap: () {}, icon: AppAssets.kGoogle),
+                    CustomSocialButton(onTap: () {}, icon: AppAssets.kApple),
+                    CustomSocialButton(onTap: () {}, icon: AppAssets.kFacebook),
+                  ],
+                ),
+                SizedBox(height: AppSpacing.twentyVertical),
+                const AgreeTermsTextCard(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
