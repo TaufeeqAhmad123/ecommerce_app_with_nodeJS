@@ -41,6 +41,7 @@ class _SignUpViewState extends State<SignUpView> {
         final otp =await provider.sendEmailVerificationCode(email);
         if (otp) {
           Get.to<Widget>(() =>  OtpView(userEmail: email,));
+
         } else {
           Get.snackbar(
             'Error',
@@ -73,6 +74,7 @@ class _SignUpViewState extends State<SignUpView> {
 
   @override
   Widget build(BuildContext context) {
+   
     return Scaffold(
       appBar: const AuthAppBar(),
       body: SingleChildScrollView(
@@ -148,7 +150,7 @@ class _SignUpViewState extends State<SignUpView> {
                   onTap: () {
                     _register();
                   },
-                  text: 'Create An Account',
+                  text:  'Create An Account',
                 ),
                 SizedBox(height: AppSpacing.thirtyVertical),
                 const TextWithDivider(),

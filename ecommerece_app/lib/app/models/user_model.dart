@@ -24,16 +24,17 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
+    
     return User(
       id: json['_id'] ?? '',
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
       updatedAt: DateTime.parse(json['updatedAt'] ?? DateTime.now().toIso8601String()),
-      profilePic: json['profilePic'] ?? AppAssets.kProfilePic,
+      profilePic: json['profilePic'] ?? '',
       location: json['location'] ?? '',
       phoneNumber: json['phoneNumber'] ?? '',
-      isVerified: json['isVerified'] ?? false,
+     isVerified: (json['verified'] ?? json['isVerified'] ?? false) == true,
     );
   }
 

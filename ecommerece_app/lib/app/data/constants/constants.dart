@@ -9,3 +9,4 @@ final registerationUrl= url + 'users/register';
 final loginUrl= url + 'users/login';
 final sendEmailVerificationCodeUrl= url + 'users/sendVerificationEmail';
 final verifyEmailVerificationCodeUrl= url + 'users/verifyVerificationEmail';
+final getUserDataUrl= url + 'users/userProfileData';

@@ -1,3 +1,5 @@
+import 'package:ecommerece_app/app/modules/auth/signin_view.dart';
+import 'package:ecommerece_app/app/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -11,15 +13,19 @@ import 'package:ecommerece_app/app/modules/profile/languages_view.dart';
 import 'package:ecommerece_app/app/modules/profile/notification_settings_view.dart';
 import 'package:ecommerece_app/app/modules/profile/security_view.dart';
 import 'package:ecommerece_app/app/modules/profile/your_card.dart';
-import 'package:ecommerece_app/app/modules/welcome/welcome_view.dart';
+
 import 'package:ecommerece_app/app/modules/widgets/buttons/custom_text_button.dart';
 import 'package:ecommerece_app/app/modules/widgets/dialogs/logout_dialog.dart';
+import 'package:provider/provider.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<AuthProvider>(context);
+    
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -35,7 +41,7 @@ class ProfileView extends StatelessWidget {
           FadeAnimation(
             delay: 1,
             child: ProfileHeaderCard(
-              user: dummyUser,
+              
             ),
           ),
           SizedBox(height: AppSpacing.thirtyVertical),
@@ -104,8 +110,11 @@ class ProfileView extends StatelessWidget {
               child: CustomTextButton(
                 onPressed: () {
                   Get.dialog<void>(LogoutDialog(
-                    logoutCallback: () {
-                      Get.offAll<Widget>(() => const WelcomeView());
+                    logoutCallback: () async{
+                      final sucess=await provider.logout();
+                      if(sucess){
+                        Get.offAll<Widget>(() => const SignInView());
+                      }
                     },
                   ));
                 },

@@ -1,4 +1,5 @@
-import 'package:ecommerece_app/app/modules/home/home_view.dart';
+
+import 'package:ecommerece_app/app/modules/landingPage/landing_page.dart';
 import 'package:ecommerece_app/app/provider/auth_provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -11,39 +12,50 @@ import 'package:provider/provider.dart';
 
 class OtpView extends StatelessWidget {
   final String? userEmail;
-   const OtpView({super.key, this.userEmail});
+  const OtpView({super.key, this.userEmail});
 
   @override
   Widget build(BuildContext context) {
-     List<TextEditingController> _otpControllers = [];
-    final provider=Provider.of<AuthProvider>(context, listen: false);
-    void verifyCode(){
-      String code = _otpControllers.map((controller) => controller.text).join();
-      if(code.length==6){
-        provider.verifyEmailVerificationCode(userEmail, code).then((isVerified) {
-          if (isVerified) {
-            Get.offAll(() => const HomeView());
-          } else {
-            Get.snackbar(
-              'Error',
-              'Invalid verification code. Please try again.',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.red.withOpacity(0.8),
-              colorText: Colors.white,
-            );
-          }
-        });
+    List<TextEditingController> _otpControllers = List.generate(
+      4,
+      (_) => TextEditingController(),
+    );
+    final provider = Provider.of<AuthProvider>(context, listen: false);
+    void verifyCode(String code) async {
+   
+      if (code.length == 4) {
+        bool isVerified = await provider.verifyEmailVerificationCode(
+          userEmail,
+          code,
+        );
+
+        if (isVerified) {
+          Get.offAll(() => const LandingPage());
+        } else {
+          Get.snackbar(
+            'Error',
+            'Invalid verification code. Please try again.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: const Color.fromARGB(
+              255,
+              74,
+              13,
+              195,
+            ).withOpacity(0.8),
+            colorText: Colors.white,
+          );
+        }
       } else {
         Get.snackbar(
           'Error',
-          'Please enter a valid 6-digit code.',
+          'Please enter a valid 4-digit code.',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red.withOpacity(0.8),
           colorText: Colors.white,
         );
       }
-      
     }
+
     return Scaffold(
       appBar: const AuthAppBar(),
       body: SingleChildScrollView(
@@ -75,22 +87,23 @@ class OtpView extends StatelessWidget {
             ),
             SizedBox(height: AppSpacing.thirtyVertical),
             CustomOTPTextField(
-             handleControllers: (controllers) {
-              _otpControllers = controllers.whereType<TextEditingController>().toList();
-
-            },
-                
-              
+              handleControllers: (controllers) {
+                _otpControllers = controllers
+                    .whereType<TextEditingController>()
+                    .toList();
+              },
               onOTPInput: (value) {
-                
-                  verifyCode();
-                
+                verifyCode(value); // use the value directly
               },
             ),
+
             SizedBox(height: 40.h),
             PrimaryButton(
               onTap: () {
-                Get.offAll(()=> const HomeView());
+              //  String otp = _otpControllers.map((controller) => controller.text).join();
+               // verifyCode(otp);
+               Get.offAll(() => const LandingPage());
+      
               },
               text: 'Continue',
             ),
@@ -98,23 +111,26 @@ class OtpView extends StatelessWidget {
             RichText(
               text: TextSpan(
                 text: 'Didn’t receive code? ',
-                style: AppTypography.kSemiBold16
-                    .copyWith(color: AppColors.kGrey60),
+                style: AppTypography.kSemiBold16.copyWith(
+                  color: AppColors.kGrey60,
+                ),
                 children: [
                   TextSpan(
                     text: 'Resend Code',
-                    recognizer: TapGestureRecognizer()..onTap = ()async {
-                     await provider.sendEmailVerificationCode(userEmail);
-                      Get.snackbar(
-                        'Success',
-                        'Verification code sent successfully.',
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Colors.green.withOpacity(0.8),
-                        colorText: Colors.white,
-                      );
-                    },
-                    style: AppTypography.kSemiBold16
-                        .copyWith(color: AppColors.kPrimary),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
+                        await provider.sendEmailVerificationCode(userEmail);
+                        Get.snackbar(
+                          'Success',
+                          'Verification code sent successfully.',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.green.withOpacity(0.8),
+                          colorText: Colors.white,
+                        );
+                      },
+                    style: AppTypography.kSemiBold16.copyWith(
+                      color: AppColors.kPrimary,
+                    ),
                   ),
                 ],
               ),

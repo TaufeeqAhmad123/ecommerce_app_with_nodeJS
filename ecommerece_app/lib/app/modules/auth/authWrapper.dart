@@ -1,59 +1,50 @@
 import 'package:ecommerece_app/app/modules/auth/otp_view.dart';
 import 'package:ecommerece_app/app/modules/auth/signin_view.dart';
-import 'package:ecommerece_app/app/modules/home/home_view.dart';
+import 'package:ecommerece_app/app/modules/landingPage/landing_page.dart';
 import 'package:ecommerece_app/app/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AuthWrapper extends StatefulWidget {
+  const AuthWrapper({super.key});
+
   @override
-  _AuthWrapperState createState() => _AuthWrapperState();
+  State<AuthWrapper> createState() => _AuthWrapperState();
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
-  bool _isLoading = true;
+  late Future<void> _authFuture;
 
   @override
   void initState() {
     super.initState();
-    _checkAuthStatus();
-  }
-
-  Future<void> _checkAuthStatus() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-
-    try {
-      await authProvider.initAuth(); // Check if user is already logged in
-    } catch (error) {
-      print('Auth check error: $error');
-    }
-
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    _authFuture =
+        Provider.of<AuthProvider>(context, listen: false).initAuth();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
+    final authProvider = Provider.of<AuthProvider>(context);
+    return FutureBuilder(
+      future:_authFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-    // Use Consumer to listen to authentication changes
-    return Consumer<AuthProvider>(
-      builder: (context, authProvider, child) {
-        if (!authProvider.isAuthenticated) {
-          return SignInView();
+        // ⬇️ Main logic based on auth & verification
+        if (authProvider.isAuthenticated) {
+         return authProvider.isUserVerified
+            ? const LandingPage()
+            : OtpView(userEmail: authProvider.user?.email);
+        } else {
+          return const SignInView();
         }
-        if (!authProvider.isUserVerified) {
-        return  OtpView();
-        }
-        return HomeView();
       },
     );
   }
 }
 
-/* Removed custom CircularProgressIndicator class to use Flutter's built-in widget */
+

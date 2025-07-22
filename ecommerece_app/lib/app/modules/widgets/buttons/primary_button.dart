@@ -1,6 +1,8 @@
+import 'package:ecommerece_app/app/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ecommerece_app/app/data/constants/constants.dart';
+import 'package:provider/provider.dart';
 
 class PrimaryButton extends StatefulWidget {
   final VoidCallback onTap;
@@ -49,6 +51,7 @@ class _PrimaryButtonState extends State<PrimaryButton>
 
   @override
   Widget build(BuildContext context) {
+     final provider = Provider.of<AuthProvider>(context,);
     return GestureDetector(
       onTap: () {
         _controller.forward().then((_) {
@@ -77,7 +80,7 @@ class _PrimaryButtonState extends State<PrimaryButton>
               color: widget.color ?? AppColors.kPrimary,
               borderRadius: BorderRadius.circular(widget.borderRadius ?? AppSpacing.radiusTwenty),
             ),
-            child: Text(
+            child: provider.isLoading ? Center(child: CircularProgressIndicator(strokeWidth: 2,),) :  Text(
               widget.text,
               style: AppTypography.kSemiBold16.copyWith(
                 color: widget.color == null ? AppColors.kWhite : Colors.black,

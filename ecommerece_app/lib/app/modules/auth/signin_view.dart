@@ -1,4 +1,6 @@
+import 'package:ecommerece_app/app/modules/auth/otp_view.dart';
 import 'package:ecommerece_app/app/modules/home/home_view.dart';
+import 'package:ecommerece_app/app/modules/landingPage/landing_page.dart';
 import 'package:ecommerece_app/app/provider/auth_provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -26,41 +28,40 @@ class _SignInViewState extends State<SignInView> {
   final TextEditingController _passwordController = TextEditingController();
   bool isRemember = false;
 
-  void _login() {
+  void _login() async {
     final provider = Provider.of<AuthProvider>(context, listen: false);
     try {
       if (_formKey.currentState!.validate()) {
-        provider
-            .login(
-              _emailController.text.trim(),
-              _passwordController.text.trim(),
-            )
-            .then((success) {
-              if (success) {
-                Get.to<Widget>(() => const HomeView());
-              } else {
-                Get.snackbar(
-                  'Error',
-                  'Login failed. Please check your credentials.',
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: const Color.fromARGB(
-                    255,
-                    7,
-                    203,
-                    79,
-                  ).withOpacity(0.8),
-                  colorText: Colors.white,
-                );
-              }
-            });
-      } else {
-        Get.snackbar(
-          'Error',
-          'Please fill in all fields correctly.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.8),
-          colorText: Colors.white,
+        final success = await provider.login(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
         );
+        if (success) {
+          final user = provider.user;
+          if (user != null) {
+            if (user.isVerified == true) {
+              Get.offAll(() => const LandingPage());
+            } else {
+              Get.offAll(() => OtpView(userEmail: user.email));
+            }
+          } else {
+            Get.snackbar(
+              'Error',
+              'User data is not available. Please try again.',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.red.withOpacity(0.8),
+              colorText: Colors.white,
+            );
+          }
+        } else {
+          Get.snackbar(
+            'Error',
+            provider.error ?? 'Login failed. Please try again.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red.withOpacity(0.8),
+            colorText: Colors.white,
+          );
+        }
       }
     } catch (e) {
       Get.snackbar(
