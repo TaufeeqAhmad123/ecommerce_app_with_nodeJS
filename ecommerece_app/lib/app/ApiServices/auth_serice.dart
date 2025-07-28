@@ -7,8 +7,6 @@ import 'package:ecommerece_app/app/modules/home/home_view.dart';
 import 'package:ecommerece_app/app/provider/auth_provider.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   
