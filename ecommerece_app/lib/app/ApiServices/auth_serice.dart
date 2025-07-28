@@ -1,12 +1,10 @@
 import 'dart:convert';
-
+import 'dart:io';
 import 'package:ecommerece_app/app/data/constants/constants.dart';
-import 'package:ecommerece_app/app/models/user_model.dart';
-import 'package:ecommerece_app/app/modules/auth/otp_view.dart';
-import 'package:ecommerece_app/app/modules/home/home_view.dart';
-import 'package:ecommerece_app/app/provider/auth_provider.dart';
-import 'package:get/get.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
 
 class AuthService {
   
@@ -177,4 +175,51 @@ class AuthService {
       return {'success': false, 'message': 'Something went wrong'};
     }
   }
+  Future<Map<String, dynamic>> uploadProfileImage(String token, File image) async {
+    try {
+        final mimeType = lookupMimeType(image.path)?.split('/');
+    final mediaType = mimeType != null && mimeType.length == 2
+        ? MediaType(mimeType[0], mimeType[1])
+        : MediaType('image', 'jpeg'); // fallback
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(uploadprofilreImageURL),
+      );
+      request.headers['Authorization'] = 'Bearer $token';
+      request.files.add(await http.MultipartFile.fromPath('profile', image.path, contentType: mediaType));
+
+      var response = await request.send();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        var data = await response.stream.bytesToString();
+        print("🔎 Status Code: ${response.statusCode}");
+        print("🔎 Raw Response: $data");
+
+        return jsonDecode(data);
+      } else {
+        var data = await response.stream.bytesToString();
+        if (kDebugMode) {
+          print("Error: $data");
+        }
+
+        Map<String, dynamic> decodedData = {};
+        try {
+          decodedData = jsonDecode(data);
+        } catch (e) {
+          // If decoding fails, leave decodedData empty
+        }
+
+        return {
+          'success': false,
+          'message':
+              decodedData['message'] ?? 'Error with uploading profile image',
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Something went wrong'};
+    }
+  }
+
+      
+  
 }

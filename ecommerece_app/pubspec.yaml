@@ -54,6 +54,9 @@ dependencies:
   provider: 
   shared_preferences:  
   http:
+  shimmer: ^3.0.0
+  image_picker: 
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_test:

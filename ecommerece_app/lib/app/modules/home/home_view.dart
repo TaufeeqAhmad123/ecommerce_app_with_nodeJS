@@ -1,3 +1,4 @@
+import 'package:ecommerece_app/app/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -9,15 +10,14 @@ import 'package:ecommerece_app/app/modules/home/components/home_appbar.dart';
 import 'package:ecommerece_app/app/modules/home/components/product_card.dart';
 import 'package:ecommerece_app/app/modules/widgets/buttons/custom_text_button.dart';
 
+
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: HomeAppBar(
-        user: dummyUser,
-      ),
+      appBar: const HomeAppBar(),
       body: ListView(
         physics: const BouncingScrollPhysics(),
         padding: EdgeInsets.symmetric(horizontal: 24.w),

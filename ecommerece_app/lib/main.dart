@@ -46,7 +46,7 @@ class Main extends StatelessWidget {
             FocusManager.instance.primaryFocus?.unfocus();
           },
           child: GetMaterialApp(
-            title: 'Ngamar',
+            title: 'Shop App',
             debugShowCheckedModeBanner: false,
             useInheritedMediaQuery: true,
            // locale: DevicePreview.locale(context),

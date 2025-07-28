@@ -6,7 +6,7 @@ class User {
   final String email;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final String profilePic;
+   String profilePic;
   final String location;
   final String phoneNumber;
   final bool isVerified;
@@ -31,7 +31,7 @@ class User {
       email: json['email'] ?? '',
       createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
       updatedAt: DateTime.parse(json['updatedAt'] ?? DateTime.now().toIso8601String()),
-      profilePic: json['profilePic'] ?? '',
+      profilePic: json['profileImage'] ?? '',
       location: json['location'] ?? '',
       phoneNumber: json['phoneNumber'] ?? '',
      isVerified: (json['verified'] ?? json['isVerified'] ?? false) == true,
@@ -48,7 +48,7 @@ class User {
       'profilePic': profilePic,
       'location': location,
       'phoneNumber': phoneNumber,
-      'isVerified': isVerified,
+      'verified': isVerified,
     };
   }
 }
